@@ -1,0 +1,357 @@
+openapi: 3.0.1
+info:
+  title: Wizleap 採用課題 API 仕様書
+  version: 1.0.1
+servers:
+  - url: http://localhost:5173
+tags:
+  - name: households
+    description: 世帯
+  - name: householdMembers
+    description: 世帯員
+paths:
+  /api/households:
+    post:
+      summary: 世帯の取得
+      description: 電話番号およびメールアドレスを用いて検索を行うため、セキュリティ上の理由からリクエストボディを用いて検索を行う。
+      tags:
+        - households
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search:
+                  type: string
+                  description: 電話番号およびメールアドレスでの検索
+                offset:
+                  type: number
+                  description: レコードの取得開始位置 (= (現在のページ数 - 1) * limit)
+                  minimum: 0
+                limit:
+                  type: number
+                  description: レコードの取得件数
+                  minimum: 1
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                  households:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uid:
+                          type: string
+                        name:
+                          type: string
+                        zipCode:
+                          type: string
+                        address:
+                          type: string
+                        phoneNumber:
+                          type: string
+                        email:
+                          type: string
+                        created:
+                          type: string
+                        updated:
+                          type: string
+  /api/households/new:
+    post:
+      summary: 世帯の作成
+      tags:
+        - households
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zipCode:
+                  type: string
+                  description: 郵便番号
+                address:
+                  type: string
+                  description: 住所
+                phoneNumber:
+                  type: string
+                  description: 電話番号
+                email:
+                  type: string
+                  description: メールアドレス
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+                  zipCode:
+                    type: string
+                  address:
+                    type: string
+                  phoneNumber:
+                    type: string
+                  email:
+                    type: string
+                  created:
+                    type: string
+                  updated:
+                    type: string
+  /api/households/{householdUid}:
+    get:
+      summary: 1 世帯の取得
+      tags:
+        - households
+      parameters:
+        - name: householdUid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+                  zipCode:
+                    type: string
+                  address:
+                    type: string
+                  phoneNumber:
+                    type: string
+                  email:
+                    type: string
+                  created:
+                    type: string
+                  updated:
+                    type: string
+    put:
+      summary: 1 世帯の更新
+      tags:
+        - households
+      parameters:
+        - name: householdUid
+          in: path
+          description: 世帯の一意な ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zipCode:
+                  type: string
+                  description: 郵便番号
+                address:
+                  type: string
+                  description: 住所
+                phoneNumber:
+                  type: string
+                  description: 電話番号
+                email:
+                  type: string
+                  description: メールアドレス
+              required:
+                - zipCode
+                - address
+                - phoneNumber
+                - email
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+                  zipCode:
+                    type: string
+                  address:
+                    type: string
+                  phoneNumber:
+                    type: string
+                  email:
+                    type: string
+                  created:
+                    type: string
+                  updated:
+                    type: string
+  /api/households/{householdUid}/members:
+    get:
+      summary: 世帯に紐づく世帯員の一覧の取得
+      tags:
+        - householdMembers
+      parameters:
+        - name: householdUid
+          in: path
+          description: 世帯の一意なID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uid:
+                      type: string
+                    householdUid:
+                      type: string
+                    familyName:
+                      type: string
+                    givenName:
+                      type: string
+                    birthday:
+                      type: string
+                    relationship:
+                      type: string
+                    created:
+                      type: string
+                    updated:
+                      type: string
+    post:
+      summary: 世帯に紐づく世帯員の追加および更新
+      tags:
+        - householdMembers
+      parameters:
+        - name: householdUid
+          in: path
+          description: 世帯の一意な ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  uid:
+                    type: string
+                    description: |
+                      - uid が指定されていない場合、新規で世帯員を追加する
+                      - uid が指定されている場合、既存の世帯員を更新する
+                      - 指定した uid がデータベース上に存在しない場合は 404 エラー
+                  householdUid:
+                    type: string
+                  familyName:
+                    type: string
+                  givenName:
+                    type: string
+                  birthday:
+                    type: string
+                  relationship:
+                    type: string
+                    enum:
+                      - 本人
+                      - 配偶者
+                      - 子
+                      - 父
+                      - 母
+                      - 兄
+                      - 弟
+                      - 姉
+                      - 妹
+                      - 義父
+                      - 義母
+                      - 義兄
+                      - 義弟
+                      - 義姉
+                      - 義妹
+                      - 孫
+                      - ひ孫
+                      - おじ
+                      - おば
+                      - いとこ
+                      - 祖父
+                      - 祖母
+                      - 曽祖父
+                      - 曽祖母
+                      - 姪
+                      - 甥
+                      - その他
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uid:
+                      type: string
+                    householdUid:
+                      type: string
+                    familyName:
+                      type: string
+                    givenName:
+                      type: string
+                    birthday:
+                      type: string
+                    relationship:
+                      type: string
+                    created:
+                      type: string
+                    updated:
+                      type: string
+  /api/households/{householdUid}/members/{householdMemberUid}:
+    delete:
+      summary: 世帯員の削除
+      tags:
+        - householdMembers
+      parameters:
+        - name: householdUid
+          in: path
+          description: 世帯の一意な ID
+          required: true
+          schema:
+            type: string
+        - name: householdMemberUid
+          in: path
+          description: 世帯員の一意な ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  householdUid:
+                    type: string
+                  householdMemberUid:
+                    type: string
