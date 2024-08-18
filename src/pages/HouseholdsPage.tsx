@@ -6,6 +6,8 @@ import {
 import { Household } from "@/models";
 import { getMultipleHouseholds } from "@/services";
 import { Pagination } from "@/components/pagenation";
+import { PageTitle } from "@/components/common/pageTitle";
+import { useNavigate } from "react-router-dom";
 
 // ページ中で表示可能な最大世帯数
 const SEARCH_LIMIT = 20;
@@ -22,6 +24,8 @@ export function HouseholdsPage() {
   const [queryText, setQueryText] = useState("");
 
   const count = useRef(0);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // 世帯一覧取得APIの呼び出し
@@ -51,9 +55,11 @@ export function HouseholdsPage() {
   const handleSearchEnter: KeyboardEventHandler<HTMLInputElement> = (e) =>
     e.key === "Enter" && search();
 
+  const handleCreateHousehold = () => navigate("/households/new");
+
   return (
     <>
-      <h1 className="text-2xl font-bold text-gray-800 my-6">世帯一覧</h1>
+      <PageTitle title={"世帯一覧"} />
       <div className="mb-4 flex space-x-2">
         <input
           className="border p-2 rounded w-full"
@@ -63,7 +69,10 @@ export function HouseholdsPage() {
           onBlur={handleSearchUnfocus}
           onKeyDown={handleSearchEnter}
         />
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={handleCreateHousehold}
+        >
           +
         </button>
       </div>
