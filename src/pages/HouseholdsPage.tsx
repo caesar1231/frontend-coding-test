@@ -5,6 +5,7 @@ import {
 
 import { Household } from "@/models";
 import { getMultipleHouseholds } from "@/services";
+import { Pagination } from "@/components/pagenation";
 
 // ページ中で表示可能な最大世帯数
 const SEARCH_LIMIT = 20;
@@ -12,7 +13,7 @@ const SEARCH_LIMIT = 20;
 export function HouseholdsPage() {
   // 検索パラメータ
   const [query, setQuery] = useState("");
-  const [offset, setOffset] = useState(0);
+  const [page, setPage] = useState(0);
 
   // 検索結果の世帯一覧
   const [households, setHouseholds] = useState<Household[]>([]);
@@ -26,7 +27,7 @@ export function HouseholdsPage() {
     // 世帯一覧取得APIの呼び出し
     const request = {
       search: query,
-      offset: offset,
+      offset: page * SEARCH_LIMIT,
       limit: SEARCH_LIMIT,
     };
     getMultipleHouseholds(request)
@@ -36,14 +37,16 @@ export function HouseholdsPage() {
       }).catch(_ => {
         // エラーハンドリング
       })
-  }, [query, offset]);
+  }, [query, page]);
 
   // 検索時に呼び出す
   const search = () => {
     setQuery(queryText);
-    setOffset(0);
+    setPage(0);
   };
 
+  const handleQueryChange: ChangeEventHandler<HTMLInputElement> = (e) =>
+    setQueryText(e.target.value);
   const handleSearchUnfocus: ChangeEventHandler<HTMLInputElement> = search;
   const handleSearchEnter: KeyboardEventHandler<HTMLInputElement> = (e) =>
     e.key === "Enter" && search();
@@ -56,7 +59,7 @@ export function HouseholdsPage() {
           className="border p-2 rounded w-full"
           placeholder="電話番号、メールアドレスで検索"
           value={queryText}
-          onChange={e => setQueryText(e.target.value)}
+          onChange={handleQueryChange}
           onBlur={handleSearchUnfocus}
           onKeyDown={handleSearchEnter}
         />
@@ -92,10 +95,16 @@ export function HouseholdsPage() {
           </tbody>
         </table>
       </div>
-      <div className="mt-4">
-        <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
-          pagination
-        </button>
+      <div className="flex justify-center py-5">
+        {
+          count.current > 0 && 
+            <Pagination
+              key={query}
+              pageCount={Math.ceil(count.current / SEARCH_LIMIT)}
+              displayedPageCount={5}
+              onChange={setPage}
+            />
+        }
       </div>
     </>
   );
