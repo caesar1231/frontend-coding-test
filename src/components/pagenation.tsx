@@ -30,7 +30,7 @@ export function Pagination({ onChange, pageCount, displayedPageCount } : Paginat
     onChange(page);
   };
 
-  // 表示する中で最もページ番号
+  // 表示する中で最も若いページ番号
   const startIndex = Math.min(
     Math.max(0, pageCount - displayedPageCount),
     Math.max(0, currentPage - Math.floor(displayedPageCount / 2))
