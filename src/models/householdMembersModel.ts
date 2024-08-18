@@ -6,11 +6,11 @@ import { Relationship } from "@/enums/relationshipEnum";
 
 export interface HouseholdMember {
   uid?: string,
-  householdUid: string,
+  householdUid?: string,
   familyName: string,
   givenName: string,
   birthday: string,
-  relationship: Relationship,
+  relationship?: Relationship,
   created?: string,
   updated?: string,
 }

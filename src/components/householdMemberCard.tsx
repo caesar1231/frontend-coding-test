@@ -1,4 +1,5 @@
 import { Relationship } from '@/enums/relationshipEnum';
+import { isValidDate } from '@/utils';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 
 export interface HouseholdMemberCardProps {
@@ -58,7 +59,7 @@ export function HouseholdMemberCard(props: HouseholdMemberCardProps) {
   const handleBirthdayChange: ChangeEventHandler<HTMLInputElement> = (e) =>
     setBirthday(e.target.value);
   const handleRelationshipChange: ChangeEventHandler<HTMLSelectElement> = (e) =>
-    setRelationship(Relationship[e.target.value as keyof typeof Relationship]);
+      setRelationship(e.target.value as Relationship);
 
   // 入力欄からフォーカスを外した際のエラー処理
   const handleFamilyNameUnfocus: ChangeEventHandler<HTMLInputElement> = (e) =>
@@ -66,9 +67,9 @@ export function HouseholdMemberCard(props: HouseholdMemberCardProps) {
   const handleGivenNameUnfocus: ChangeEventHandler<HTMLInputElement> = (e) =>
     setGivenNameError(e.target.value.length <= 0);
   const handleBirthdayUnfocus: ChangeEventHandler<HTMLInputElement> = (e) =>
-    setBirthdayError(isNaN(new Date(e.target.value).getTime()));
+    setBirthdayError(!isValidDate(e.target.value));
   const handleRelationshipUnfocus: ChangeEventHandler<HTMLSelectElement> = (e) =>
-    setRelationshipError(e.target.value.length <= 0);
+    setRelationshipError(e.target.value === "");
 
   // エラー表示用コンポーネント
   const errorPane = (title: string) => {
@@ -149,7 +150,10 @@ export function HouseholdMemberCard(props: HouseholdMemberCardProps) {
             onBlur={handleRelationshipUnfocus}
           >
             <option value={""} disabled>続柄</option>
-            {Object.values(Relationship).map(e => (<option key={e}>{e}</option>))}
+            {
+              Object.entries(Relationship).map(([key, value]) =>
+                (<option key={key} value={key}>{value}</option>))
+            }
           </select>
         </div>
 
