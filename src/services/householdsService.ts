@@ -4,7 +4,6 @@ import {
   FetchHouseholdsRequest,
   FetchHouseholdsResponse,
   CreateHouseholdRequest,
-  UpdateHouseholdRequest,
 } from "@/models";
 
 /**
@@ -28,7 +27,7 @@ export const getMultipleHouseholds = async (data: FetchHouseholdsRequest) => {
  */
 export const createHoushold = async (data: CreateHouseholdRequest) => {
   try {
-    const response = await api.post<Household>("/households", data);
+    const response = await api.post<Household>("/households/new", data);
     return response.data;
   } catch (error) {
       throw error;
@@ -57,7 +56,7 @@ export const getHousehold = async (uid: string) => {
  * @param data 
  * @returns nameパラメータはundefinedになっている点に注意
  */
-export const updateHousehold = async (uid: string, data: UpdateHouseholdRequest) => {
+export const updateHousehold = async (uid: string, data: CreateHouseholdRequest) => {
   try {
     const response = await api.put<Household>(`/households/${uid}`, data);
     return response.data;

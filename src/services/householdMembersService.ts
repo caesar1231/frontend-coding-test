@@ -2,7 +2,6 @@ import api from "@/services/apiConfig";
 import {
   HouseholdMember,
   DeleteHouseholdMemberResponse,
-  UpdateHouseholdRequest,
 } from "@/models";
 
 /**
@@ -28,7 +27,7 @@ export const getHouseholdMembers = async (householdUid: string) => {
  * - 指定したuidが存在しない場合はエラー
  * @param householdUid 世帯ID
  */
-export const updateHouseholdMembers = async (householdUid: string, data: UpdateHouseholdRequest) => {
+export const updateHouseholdMembers = async (householdUid: string, data: HouseholdMember[]) => {
   try {
     const response = await api.post<HouseholdMember[]>(
       `/households/${householdUid}/members`,

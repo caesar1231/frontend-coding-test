@@ -30,10 +30,3 @@ export interface CreateHouseholdRequest {
   phoneNumber: string,
   email: string,
 }
-
-export interface UpdateHouseholdRequest {
-  zipCode: string,
-  address: string,
-  phoneNumber: string,
-  email: string,
-}
