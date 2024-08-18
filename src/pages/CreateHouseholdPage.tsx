@@ -1,8 +1,13 @@
 import { ChangeEventHandler, useState } from "react";
 
 import { PageTitle } from "@/components/common/pageTitle";
+import { HouseholdMemberCard } from "@/components/householdMemberCard";
+import { isValidAddress, isValidEmail, isValidPhoneNumber, isValidZipCode } from "@/utils";
+import useHouseholdMembers from "@/hooks/useHouseholdMembers";
 
 export function CreateHouseholdPage() {
+
+  const { members, saveMembers, addMember, removeMember, updateMember } = useHouseholdMembers();
 
   // 入力項目
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -27,21 +32,29 @@ export function CreateHouseholdPage() {
     setAddress(e.target.value);
 
   // 入力箇所からフォーカスを外した際のエラー処理
-  const handlePhoneNumberUnfocus: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const pattern = new RegExp("^[0-9]{10,11}$");
-    setPhoneNumberError(!pattern.test(e.target.value));
-  }
-  const handleEmailUnfocus: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const pattern = new RegExp("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$");
-    setEmailError(!pattern.test(e.target.value));
-  }
-  const handleZipCodeUnfocus: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const pattern = new RegExp("^[0-9]{7}$");
-    setZipCodeError(!pattern.test(e.target.value));
-  }
-  const handleAddressUnfocus: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-    setAddressError(e.target.value.length <= 0);
-  }
+  const handlePhoneNumberUnfocus: ChangeEventHandler<HTMLInputElement> = (e) =>
+    setPhoneNumberError(!isValidPhoneNumber(e.target.value));
+  const handleEmailUnfocus: ChangeEventHandler<HTMLInputElement> = (e) =>
+    setEmailError(!isValidEmail(e.target.value));
+  const handleZipCodeUnfocus: ChangeEventHandler<HTMLInputElement> = (e) =>
+    setZipCodeError(!isValidZipCode(e.target.value));
+  const handleAddressUnfocus: ChangeEventHandler<HTMLTextAreaElement> = (e) =>
+    setAddressError(!isValidAddress(e.target.value));
+
+  // 世帯員情報の削除
+  const removeMemberData = (id: string) => {
+    const removedMember = members.find(e => e.uid === id)!;
+    const message =
+      removedMember.familyName && removedMember.givenName
+        ? `${removedMember.familyName} ${removedMember.givenName} さんを削除しますか？`
+        : "この世帯情報を削除しますか？";
+    const willDelete = window.confirm(message);
+    if (!willDelete) return;
+    removeMember(id);
+  };
+
+  // 世帯情報の保存
+  const saveMembersData = async () => await saveMembers(zipCode, address, phoneNumber, email);
 
   // 入力欄コンポーネント
   const inputPane = (
@@ -108,6 +121,40 @@ export function CreateHouseholdPage() {
         </div>
         {hasAddressError && errorPane("住所を入力してください")}
       </div>
+
+      <h2 className="text-xl font-bold my-4">世帯員一覧</h2>
+      <div className="py-2 px-5">
+        {members.map((member) => (
+          <div className="mb-3" key={member.uid}>
+            <HouseholdMemberCard
+              familyName={member.familyName}
+              givenName={member.givenName}
+              birthday={member.birthday}
+              relationship={member.relationship}
+              onDeleteCard={() => removeMemberData(member.uid!)}
+              onChange={(fn, gn, b, r) => updateMember(member.uid!, fn, gn, b, r)}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="flex flex-col items-center justify-center">
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-4"
+          onClick={addMember}
+        >
+          + 新しい世帯員を追加
+        </button>
+        
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-20"
+          type="submit"
+          onClick={saveMembersData}
+        >
+          世帯情報を保存
+        </button>
+      </div>
+
     </>
   );
 }
