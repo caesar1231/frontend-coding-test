@@ -16,7 +16,7 @@ export const getMultipleHouseholds = async (data: FetchHouseholdsRequest) => {
     const response = await api.post<FetchHouseholdsResponse>("/households", data);
     return response.data;
   } catch (error) {
-      throw error;
+    throw error;
   }
 };
 
@@ -30,7 +30,7 @@ export const createHousehold = async (data: CreateHouseholdRequest) => {
     const response = await api.post<Household>("/households/new", data);
     return response.data;
   } catch (error) {
-      throw error;
+    throw error;
   }
 };
 
@@ -46,7 +46,7 @@ export const getHousehold = async (uid: string) => {
     );
     return response.data;
   } catch (error) {
-      throw error;
+    throw error;
   }
 };
 
@@ -61,6 +61,6 @@ export const updateHousehold = async (uid: string, data: CreateHouseholdRequest)
     const response = await api.put<Household>(`/households/${uid}`, data);
     return response.data;
   } catch (error) {
-      throw error;
+    throw error;
   }
 };
