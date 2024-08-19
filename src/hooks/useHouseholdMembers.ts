@@ -1,19 +1,50 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { Relationship } from "@/enums/relationshipEnum";
 import { HouseholdMember } from "@/models";
-import { createHoushold as createHousehold, updateHouseholdMembers } from "@/services";
+import { createHousehold, deleteHouseholdMember, getHousehold, getHouseholdMembers, updateHousehold, updateHouseholdMembers } from "@/services";
 import { isValidAddress, isValidDate, isValidEmail, isValidFamilyName, isValidGivenName, isValidPhoneNumber, isValidRelationship, isValidZipCode } from "@/utils";
 
-const useHouseholdMembers = () => {
+/**
+ * 世帯・世帯員情報のCRUDを行う
+ * @param householdUid 世帯ID
+ */
+const useHouseholdMembers = (householdUid?: string) => {
+  // 世帯情報
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [address, setAddress] = useState("");
+  // 世帯員情報
   const [members, setMembers] = useState<HouseholdMember[]>([]);
+
   const newMemberIds = useRef<string[]>([]);
+  const removedMemberIds = useRef<string[]>([]);
+
+  useEffect(() => {
+    if (!householdUid) return;
+    getHouseholdMembers(householdUid)
+      .then(setMembers)
+      .catch(_ => {
+        // エラーハンドリング
+      });
+    getHousehold(householdUid)
+      .then(household => {
+        setPhoneNumber(household.phoneNumber);
+        setEmail(household.email);
+        setZipCode(household.zipCode);
+        setAddress(household.address);
+      })
+      .catch(_ => {
+        // エラーハンドリング
+      });
+  }, [householdUid]);
 
   /**
    * 世帯と世帯員情報を保存する
    */
-  const saveMembers = useCallback(async (zipCode: string, address: string, phoneNumber: string, email: string) => {
+  const saveMembers = useCallback(async () => {
     // 世帯情報のバリデーション
     if (!isValidPhoneNumber(phoneNumber)) return;
     if (!isValidAddress(address)) return;
@@ -44,13 +75,23 @@ const useHouseholdMembers = () => {
     }
     if (!hasSelf) return;
 
+    // 保存用世帯データ
+    const household = { phoneNumber, zipCode, email, address };
     try {
-      const household = await createHousehold({ zipCode, address, phoneNumber, email });
-      return await updateHouseholdMembers(household.uid, requestMembers);
+      if (householdUid) {
+        await Promise.all([
+          updateHousehold(householdUid, household),
+          updateHouseholdMembers(householdUid, requestMembers),
+          ...removedMemberIds.current.map(e => deleteHouseholdMember(householdUid, e))
+        ]);
+      } else {
+        const updatedHousehold = await createHousehold(household);
+        await updateHouseholdMembers(updatedHousehold.uid, requestMembers);
+      }
     } catch (_) {
       // エラーハンドリング
     }
-  }, [members]);
+  }, [phoneNumber, zipCode, email, address, members]);
 
   /**
    * データが空の世帯員を作成する
@@ -64,7 +105,7 @@ const useHouseholdMembers = () => {
     };
     newMemberIds.current.push(emptyMember.uid);
     setMembers([...members, emptyMember]);
-  }, []);
+  }, [members]);
 
   /**
    * 世帯員を削除する
@@ -73,6 +114,7 @@ const useHouseholdMembers = () => {
     const i = newMemberIds.current.indexOf(id);
     if (i !== -1) newMemberIds.current.splice(i, 1);
     setMembers(members => members.filter(m => m.uid !== id));
+    removedMemberIds.current.push(id);
   }, [members]);
 
   /**
@@ -93,7 +135,11 @@ const useHouseholdMembers = () => {
           : member)
       ), [members]);
 
-  return { members, saveMembers, addMember, removeMember, updateMember };
+  return {
+    phoneNumber, email, zipCode, address,
+    setPhoneNumber, setEmail, setZipCode, setAddress,
+    members, saveMembers, addMember, removeMember, updateMember
+  };
 };
 
 export default useHouseholdMembers;
