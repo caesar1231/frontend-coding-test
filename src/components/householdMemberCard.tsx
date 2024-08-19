@@ -1,5 +1,5 @@
 import { Relationship } from '@/enums/relationshipEnum';
-import { isValidDate } from '@/utils';
+import { isValidDate, isValidFamilyName, isValidGivenName, isValidRelationship } from '@/utils';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 
 export interface HouseholdMemberCardProps {
@@ -63,13 +63,13 @@ export function HouseholdMemberCard(props: HouseholdMemberCardProps) {
 
   // 入力欄からフォーカスを外した際のエラー処理
   const handleFamilyNameUnfocus: ChangeEventHandler<HTMLInputElement> = (e) =>
-    setFamilyNameError(e.target.value.length <= 0);
+    setFamilyNameError(!isValidFamilyName(e.target.value));
   const handleGivenNameUnfocus: ChangeEventHandler<HTMLInputElement> = (e) =>
-    setGivenNameError(e.target.value.length <= 0);
+    setGivenNameError(!isValidGivenName(e.target.value));
   const handleBirthdayUnfocus: ChangeEventHandler<HTMLInputElement> = (e) =>
     setBirthdayError(!isValidDate(e.target.value));
   const handleRelationshipUnfocus: ChangeEventHandler<HTMLSelectElement> = (e) =>
-    setRelationshipError(e.target.value === "");
+    setRelationshipError(!isValidRelationship(e.target.value));
 
   // エラー表示用コンポーネント
   const errorPane = (title: string) => {
@@ -151,7 +151,7 @@ export function HouseholdMemberCard(props: HouseholdMemberCardProps) {
             <option value={""} disabled>続柄</option>
             {
               Object.entries(Relationship).map(([key, value]) =>
-                (<option key={key} value={key}>{value}</option>))
+                (<option key={key} value={value}>{value}</option>))
             }
           </select>
         </div>
