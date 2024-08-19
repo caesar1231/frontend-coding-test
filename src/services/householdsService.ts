@@ -25,7 +25,7 @@ export const getMultipleHouseholds = async (data: FetchHouseholdsRequest) => {
  * @param data 
  * @returns nameパラメータはundefinedになっている点に注意
  */
-export const createHoushold = async (data: CreateHouseholdRequest) => {
+export const createHousehold = async (data: CreateHouseholdRequest) => {
   try {
     const response = await api.post<Household>("/households/new", data);
     return response.data;
