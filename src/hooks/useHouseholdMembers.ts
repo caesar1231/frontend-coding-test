@@ -20,10 +20,16 @@ const useHouseholdMembers = (householdUid?: string) => {
   // 世帯員情報
   const [members, setMembers] = useState<HouseholdMember[]>([]);
 
+  // 追加・削除したメンバーのIDを保存する
   const newMemberIds = useRef<string[]>([]);
   const removedMemberIds = useRef<string[]>([]);
 
   useEffect(() => {
+    // 初期化
+    newMemberIds.current = [];
+    removedMemberIds.current = [];
+
+    // 世帯データ取得
     if (!householdUid) return;
     getHouseholdMembers(householdUid)
       .then(setMembers)
@@ -112,10 +118,9 @@ const useHouseholdMembers = (householdUid?: string) => {
    * 世帯員を削除する
    */
   const removeMember = useCallback((id: string) => {
-    const i = newMemberIds.current.indexOf(id);
-    if (i !== -1) newMemberIds.current.splice(i, 1);
+    const index = newMemberIds.current.indexOf(id);
+    index !== -1 ? newMemberIds.current.splice(index, 1) : removedMemberIds.current.push(id);
     setMembers(members => members.filter(m => m.uid !== id));
-    removedMemberIds.current.push(id);
   }, [members]);
 
   /**
