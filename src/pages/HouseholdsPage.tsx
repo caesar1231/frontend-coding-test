@@ -13,6 +13,8 @@ import { useNavigate } from "react-router-dom";
 const SEARCH_LIMIT = 20;
 
 export function HouseholdsPage() {
+  const navigate = useNavigate();
+
   // 検索パラメータ
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
@@ -23,9 +25,8 @@ export function HouseholdsPage() {
   // 検索フォームの文字列
   const [queryText, setQueryText] = useState("");
 
+  // 検索結果数
   const count = useRef(0);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     // 世帯一覧取得APIの呼び出し
@@ -55,6 +56,7 @@ export function HouseholdsPage() {
   const handleSearchEnter: KeyboardEventHandler<HTMLInputElement> = (e) =>
     e.key === "Enter" && search();
 
+  // 画面遷移
   const handleCreateHousehold = () => navigate("/households/new");
   const handleEditHousehold = (uid: string) => navigate(`/households/${uid}`);
 
