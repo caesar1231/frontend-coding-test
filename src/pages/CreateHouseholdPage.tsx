@@ -5,6 +5,6 @@ export function CreateHouseholdPage() {
   const householdData = useHouseholdMembers();
 
   return (
-      <HouseholdEditComponent {...householdData} />
+      <HouseholdEditComponent pageTitle="世帯新規追加" {...householdData} />
   );
 }

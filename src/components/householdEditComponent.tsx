@@ -7,6 +7,9 @@ import { HouseholdMember } from "@/models";
 import { Relationship } from "@/enums/relationshipEnum";
 
 interface HouseholdEditComponentProps {
+  // 見出し
+  pageTitle: string
+
   // 世帯情報
   phoneNumber: string
   email: string
@@ -31,6 +34,7 @@ interface HouseholdEditComponentProps {
  * 世帯情報編集コンポーネント
  */
 export function HouseholdEditComponent({
+  pageTitle,
   phoneNumber, email, zipCode, address,
   setPhoneNumber, setEmail, setZipCode, setAddress,
   members, saveMembers, addMember, removeMember, updateMember }: HouseholdEditComponentProps)
@@ -104,7 +108,7 @@ export function HouseholdEditComponent({
 
   return (
     <>
-      <PageTitle title={"世帯新規追加"} />
+      <PageTitle title={pageTitle} />
       <h2 className="text-xl font-bold my-4">世帯情報</h2>
 
       <div className="px-5">

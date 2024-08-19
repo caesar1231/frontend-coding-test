@@ -8,6 +8,6 @@ export function EditHouseholdPage() {
   const householdData = useHouseholdMembers(householdUid);
   
   return (
-    <HouseholdEditComponent {...householdData} />
+    <HouseholdEditComponent pageTitle="世帯編集" {...householdData} />
   );
 }
