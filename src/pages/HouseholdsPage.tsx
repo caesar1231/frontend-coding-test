@@ -56,6 +56,7 @@ export function HouseholdsPage() {
     e.key === "Enter" && search();
 
   const handleCreateHousehold = () => navigate("/households/new");
+  const handleEditHousehold = (uid: string) => navigate(`/households/${uid}`);
 
   return (
     <>
@@ -93,7 +94,11 @@ export function HouseholdsPage() {
                 ? "該当する世帯はありません。"
                 : households.map((household, i) => (
                     <tr key={i}>
-                      <td>{household.uid}</td>
+                      <td>
+                        <button onClick={() => handleEditHousehold(household.uid)}>
+                          {household.uid}
+                        </button>
+                      </td>
                       <td>{household.name}</td>
                       <td>{household.phoneNumber}</td>
                       <td>{household.email}</td>
