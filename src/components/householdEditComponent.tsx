@@ -4,7 +4,6 @@ import { PageTitle } from "@/components/common/pageTitle";
 import { HouseholdMemberCard } from "@/components/householdMemberCard";
 import { isValidAddress, isValidEmail, isValidPhoneNumber, isValidZipCode } from "@/utils";
 import { HouseholdMember } from "@/models";
-import { Relationship } from "@/enums/relationshipEnum";
 
 interface HouseholdEditComponentProps {
   // 見出し
@@ -27,7 +26,7 @@ interface HouseholdEditComponentProps {
   saveMembers: () => Promise<void>
   addMember: () => void
   removeMember: (uid: string) => void
-  updateMember: (uid: string, familyName: string, givenName: string, birthday: string, relationship?: Relationship) => void
+  updateMember: (uid: string, familyName: string, givenName: string, birthday: string, relationship: string) => void
 }
 
 /**

@@ -6,7 +6,7 @@ export interface HouseholdMemberCardProps {
   familyName: string
   givenName: string
   birthday: string
-  relationship?: Relationship
+  relationship: string
 
   /**
    * 入力値変更時のコールバック関数
@@ -15,7 +15,7 @@ export interface HouseholdMemberCardProps {
     familyName: string,
     givenName: string,
     birthday: string,
-    relationship?: Relationship,
+    relationship: string,
   ) => void
 
   /**
@@ -30,7 +30,7 @@ export function HouseholdMemberCard(props: HouseholdMemberCardProps) {
   const [familyName, setFamilyName] = useState("");
   const [givenName, setGivenName] = useState("");
   const [birthday, setBirthday] = useState("");
-  const [relationship, setRelationship] = useState<Relationship>();
+  const [relationship, setRelationship] = useState("");
 
   // 入力項目のエラー管理
   const [hasFamilyNameError, setFamilyNameError] = useState(false);
@@ -59,7 +59,7 @@ export function HouseholdMemberCard(props: HouseholdMemberCardProps) {
   const handleBirthdayChange: ChangeEventHandler<HTMLInputElement> = (e) =>
     setBirthday(e.target.value);
   const handleRelationshipChange: ChangeEventHandler<HTMLSelectElement> = (e) =>
-      setRelationship(e.target.value as Relationship);
+    setRelationship(e.target.value);
 
   // 入力欄からフォーカスを外した際のエラー処理
   const handleFamilyNameUnfocus: ChangeEventHandler<HTMLInputElement> = (e) =>
@@ -144,7 +144,6 @@ export function HouseholdMemberCard(props: HouseholdMemberCardProps) {
           <label className="block text-gray-600 col-span-1">世帯主との続柄</label>
           <select
             className="border rounded py-1 px-2 w-full col-span-2"
-            defaultValue={""}
             value={relationship}
             onChange={handleRelationshipChange}
             onBlur={handleRelationshipUnfocus}

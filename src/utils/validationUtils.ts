@@ -37,6 +37,6 @@ export function isValidGivenName(givenName: string) {
   return givenName.length > 0;
 }
 
-export function isValidRelationship(relationship?: Relationship) {
-  return !!relationship;
+export function isValidRelationship(relationship: string) {
+  return Object.values(Relationship).includes(relationship as any);
 }

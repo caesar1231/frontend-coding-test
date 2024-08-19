@@ -3,7 +3,6 @@ import {
   HouseholdMember,
   DeleteHouseholdMemberResponse,
 } from "@/models";
-import { Relationship } from "@/enums/relationshipEnum";
 
 /**
  * 指定した世帯に紐づく世帯員の一覧を取得するAPI
@@ -30,13 +29,9 @@ export const getHouseholdMembers = async (householdUid: string) => {
  */
 export const updateHouseholdMembers = async (householdUid: string, data: HouseholdMember[]) => {
   try {
-    const requestBody = data.map(e => {
-      const relationKey = e.relationship! as unknown as keyof typeof Relationship;
-      return { ...e, relationship: Relationship[relationKey] }
-    });
     const response = await api.post<HouseholdMember[]>(
       `/households/${householdUid}/members`,
-      requestBody
+      data,
     );
     return response.data;
   } catch (error) {

@@ -7,7 +7,8 @@ import { createHousehold, deleteHouseholdMember, getHousehold, getHouseholdMembe
 import { isValidAddress, isValidDate, isValidEmail, isValidFamilyName, isValidGivenName, isValidPhoneNumber, isValidRelationship, isValidZipCode } from "@/utils";
 
 /**
- * 世帯・世帯員情報のCRUDを行う
+ * 世帯・世帯員情報のCRUDを行う。
+ * 世帯ID無しで呼び出した場合、全ての情報が空の状態で初期化される。
  * @param householdUid 世帯ID
  */
 const useHouseholdMembers = (householdUid?: string) => {
@@ -63,8 +64,7 @@ const useHouseholdMembers = (householdUid?: string) => {
       if (!isValidRelationship(member.relationship)) return;
 
       // 世帯主判定
-      const relationshipVal = Relationship[member.relationship as unknown as keyof typeof Relationship];
-      if (relationshipVal === Relationship.Self) hasSelf = true;
+      if (member.relationship === Relationship.Self) hasSelf = true;
 
       // 新規世帯員判定（新規の場合は一時IDが割り当てられているのでそれを外す）
       if (newMemberIds.current.includes(member.uid!)) {
@@ -102,6 +102,7 @@ const useHouseholdMembers = (householdUid?: string) => {
       familyName: "",
       givenName: "",
       birthday: "",
+      relationship: "",
     };
     newMemberIds.current.push(emptyMember.uid);
     setMembers([...members, emptyMember]);
@@ -122,7 +123,7 @@ const useHouseholdMembers = (householdUid?: string) => {
    */
   const updateMember = useCallback((
     id: string, familyName: string, givenName: string,
-    birthday: string, relationship?: Relationship) =>
+    birthday: string, relationship: string) =>
       setMembers(members => 
         members.map(member => member.uid === id
           ? {
