@@ -26,7 +26,7 @@ interface HouseholdEditComponentProps {
   saveMembers: () => Promise<void>
   addMember: () => void
   removeMember: (uid: string) => void
-  updateMember: (uid: string, familyName: string, givenName: string, birthday: string, relationship: string) => void
+  updateMember: (member: HouseholdMember) => void
 }
 
 /**
@@ -45,7 +45,7 @@ export function HouseholdEditComponent({
   const [hasZipCodeError, setZipCodeError] = useState(false);
   const [hasAddressError, setAddressError] = useState(false);
 
-  // 各種入力値の設定
+  // 世帯編集時の入力項目設定
   const handlePhoneNumberChange: ChangeEventHandler<HTMLInputElement> = (e) =>
     setPhoneNumber(e.target.value);
   const handleEmailChange: ChangeEventHandler<HTMLInputElement> = (e) =>
@@ -64,6 +64,16 @@ export function HouseholdEditComponent({
     setZipCodeError(!isValidZipCode(e.target.value));
   const handleAddressUnfocus: ChangeEventHandler<HTMLTextAreaElement> = (e) =>
     setAddressError(!isValidAddress(e.target.value));
+
+  // 世帯員編集時の入力項目設定
+  const handleFamilyNameChange = (member: HouseholdMember, familyName: string) =>
+    updateMember({ ...member, familyName });
+  const handleGivenNameChange = (member: HouseholdMember, givenName: string) =>
+    updateMember({ ...member, givenName });
+  const handleBirthdayChange = (member: HouseholdMember, birthday: string) =>
+    updateMember({ ...member, birthday });
+  const handleRelationshipChange = (member: HouseholdMember, relationship: string) =>
+    updateMember({ ...member, relationship });
 
   // 世帯員情報の削除時にポップアップを表示する
   const removeMemberData = (id: string) => {
@@ -152,8 +162,11 @@ export function HouseholdEditComponent({
               givenName={member.givenName}
               birthday={member.birthday}
               relationship={member.relationship}
+              setFamilyName={(familyName) => handleFamilyNameChange(member, familyName)}
+              setGivenName={(givenName) => handleGivenNameChange(member, givenName)}
+              setBirthday={(birthday) => handleBirthdayChange(member, birthday)}
+              setRelationship={(relationship) => handleRelationshipChange(member, relationship)}
               onDeleteCard={() => removeMemberData(member.uid!)}
-              onChange={(fn, gn, b, r) => updateMember(member.uid!, fn, gn, b, r)}
             />
           </div>
         ))}

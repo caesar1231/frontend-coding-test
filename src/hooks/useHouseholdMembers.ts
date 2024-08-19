@@ -126,19 +126,9 @@ const useHouseholdMembers = (householdUid?: string) => {
   /**
    * 世帯員情報を更新する
    */
-  const updateMember = useCallback((
-    id: string, familyName: string, givenName: string,
-    birthday: string, relationship: string) =>
+  const updateMember = useCallback((memberData: HouseholdMember) =>
       setMembers(members => 
-        members.map(member => member.uid === id
-          ? {
-              ...member,
-              familyName: familyName,
-              givenName: givenName,
-              birthday: birthday,
-              relationship: relationship,
-            }
-          : member)
+        members.map(member => member.uid === memberData.uid ? memberData : member)
       ), [members]);
 
   return {

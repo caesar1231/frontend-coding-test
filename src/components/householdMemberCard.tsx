@@ -1,6 +1,6 @@
 import { Relationship } from '@/enums/relationshipEnum';
 import { isValidDate, isValidFamilyName, isValidGivenName, isValidRelationship } from '@/utils';
-import { ChangeEventHandler, useEffect, useState } from 'react';
+import { ChangeEventHandler, useState } from 'react';
 
 export interface HouseholdMemberCardProps {
   familyName: string
@@ -8,15 +8,10 @@ export interface HouseholdMemberCardProps {
   birthday: string
   relationship: string
 
-  /**
-   * 入力値変更時のコールバック関数
-   */
-  onChange: (
-    familyName: string,
-    givenName: string,
-    birthday: string,
-    relationship: string,
-  ) => void
+  setFamilyName: (familyName: string) => void
+  setGivenName: (givenName: string) => void
+  setBirthday: (birthday: string) => void
+  setRelationship: (relationship: string) => void
 
   /**
    * 世帯情報入力カード削除時のコールバック関数
@@ -24,32 +19,16 @@ export interface HouseholdMemberCardProps {
   onDeleteCard: () => void
 }
 
-export function HouseholdMemberCard(props: HouseholdMemberCardProps) {
-
-  // 入力値
-  const [familyName, setFamilyName] = useState("");
-  const [givenName, setGivenName] = useState("");
-  const [birthday, setBirthday] = useState("");
-  const [relationship, setRelationship] = useState("");
+export function HouseholdMemberCard({
+  familyName, givenName, birthday, relationship,
+  setFamilyName, setGivenName, setBirthday, setRelationship, onDeleteCard,
+}: HouseholdMemberCardProps) {
 
   // 入力項目のエラー管理
   const [hasFamilyNameError, setFamilyNameError] = useState(false);
   const [hasGivenNameError, setGivenNameError] = useState(false);
   const [hasBirthdayError, setBirthdayError] = useState(false);
   const [hasRelationshipError, setRelationshipError] = useState(false);
-
-  // 入力値の初期値設定
-  useEffect(() => {
-    setFamilyName(props.familyName);
-    setGivenName(props.givenName);
-    setBirthday(props.birthday);
-    setRelationship(props.relationship);
-  }, []);
-
-  // 入力値を反映する
-  useEffect(() => {
-    props.onChange(familyName, givenName, birthday, relationship);
-  }, [familyName, givenName, birthday, relationship]);
 
   // 各種入力値の設定
   const handleFamilyNameChange: ChangeEventHandler<HTMLInputElement> = (e) =>
@@ -82,7 +61,7 @@ export function HouseholdMemberCard(props: HouseholdMemberCardProps) {
     <div className="bg-white shadow-md rounded-lg px-4 pb-4 border border-gray-300">
       <div className="flex justify-between items-center">
         <div className="flex-grow"/>
-        <button className="text-gray-500 hover:text-gray-700" onClick={props.onDeleteCard}>
+        <button className="text-gray-500 hover:text-gray-700" onClick={onDeleteCard}>
           <span className="text-xl">×</span>
         </button>
       </div>
